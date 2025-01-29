@@ -7,7 +7,7 @@ class ValidatorFactory
     private array $validators = [
         'baseValidator' => BaseValidator::class,
         'number'        => NumberValidator::class,
-        //        'textfield' => TextFieldValidator::class,
+        'textfield'     => TextFieldValidator::class,
         //        'datagrid' => DataGridValidator::class,
         //        'table' => TableValidator::class,
         //        'columns' => ColumnsValidator::class,
