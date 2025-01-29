@@ -1,0 +1,25 @@
+{
+  "name": "a9korn/formio-validator",
+  "description": "Formio JSON schema validator for PHP",
+  "type": "library",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "A9korn\\FormioValidator\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Alex Korn",
+      "email": "a9korn@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^8.1",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5"
+  }
+}
