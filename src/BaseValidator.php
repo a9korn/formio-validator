@@ -2,20 +2,25 @@
 
 namespace A9korn\FormioValidator;
 
-abstract class BaseValidator implements ValidatorInterface
+class BaseValidator implements ValidatorInterface
 {
     protected FormioBuilderValidator $formValidator;
 
     protected array $requiredFields = ['key', 'type'];
-    protected array $optionalFields = ['label', 'input', 'tableView'];
 
-    public function __construct(FormioBuilderValidator $formValidator)
-    {
+    public function __construct(FormioBuilderValidator $formValidator) {
         $this->formValidator = $formValidator;
     }
 
-    protected function validateRequired(array $component): array
-    {
+    public function validate(array $component): array {
+        return array_merge(
+            $this->validateRequired($component),
+            $this->validateConditional($component),
+            $this->validateDataType($component)
+        );
+    }
+
+    protected function validateRequired(array $component): array {
         $errors = [];
         foreach ($this->requiredFields as $field) {
             if (!isset($component[$field])) {
@@ -25,8 +30,7 @@ abstract class BaseValidator implements ValidatorInterface
         return $errors;
     }
 
-    protected function validateConditional(array $component): array
-    {
+    protected function validateConditional(array $component): array {
         $errors = [];
         if (isset($component['conditional'])) {
             $conditional = $component['conditional'];
@@ -44,8 +48,7 @@ abstract class BaseValidator implements ValidatorInterface
         return $errors;
     }
 
-    protected function validateDataType(array $component): array
-    {
+    protected function validateDataType(array $component): array {
         $errors = [];
         if (isset($component['input']) && !is_bool($component['input'])) {
             $errors[] = "'input' field must be boolean";
@@ -57,14 +60,5 @@ abstract class BaseValidator implements ValidatorInterface
             $errors[] = "'label' field must be string";
         }
         return $errors;
-    }
-
-    public function validate(array $component): array
-    {
-        return array_merge(
-            $this->validateRequired($component),
-            $this->validateConditional($component),
-            $this->validateDataType($component)
-        );
     }
 }
