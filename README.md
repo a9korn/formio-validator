@@ -5,7 +5,7 @@
 ### Install library ###
 ```composer require a9korn/formio-validator```
 
-### Create test script: ###
+### Script for test: ###
 
 - copy data-example/schema.json - to your-project directory
 - create file [script_name].php
@@ -28,4 +28,55 @@ try {
     print_r($e);
 }
 
+```
+
+## How to Create Custom Validator ##
+
+Create custom class **_implements IFormValidator_**
+```php
+<?php
+
+namespace App;
+
+use A9korn\FormioValidator\BaseValidator;
+use A9korn\FormioValidator\IFormValidator;
+
+class ButtonValidator extends BaseValidator implements IFormValidator
+{
+    protected array $requiredFields = ['key', 'type', 'input'];
+
+    public function validate(array $component): array {
+        $errors = parent::validate($component);
+
+        return array_merge(
+            $errors,
+            $this->myValidator($component)
+        );
+    }
+
+    public function myValidator(array $component): array {
+        $errors = [];
+
+        // TODO - validation logic
+
+        return $errors;
+    }
+}
+
+```
+
+add custom validators array as argument
+```php
+    $myValidators = [
+        'button' => \App\ButtonValidator::class
+    ];
+
+    $validator = new FormioBuilderValidator($schema_array['components'], $myValidators);
+    $errors = $validator->validateSchema();
+```
+
+or register custom validator
+```php
+    $validator = new FormioBuilderValidator($schema_array['components']);
+    $validator->registerValidator('button',\App\ButtonValidator::class);
 ```

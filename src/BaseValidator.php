@@ -2,7 +2,7 @@
 
 namespace A9korn\FormioValidator;
 
-class BaseValidator implements ValidatorInterface
+class BaseValidator implements IFormValidator
 {
     protected FormioBuilderValidator $formValidator;
 

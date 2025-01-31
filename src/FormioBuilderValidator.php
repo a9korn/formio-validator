@@ -7,9 +7,29 @@ class FormioBuilderValidator
     private array $components;
     private ValidatorFactory $validatorFactory;
 
-    public function __construct(array $components) {
+    /**
+     * @param array $components
+     * @param array<string, class-string<IFormValidator>> $validators
+     */
+    public function __construct(array $components, array $validators = []) {
         $this->components = $components;
         $this->validatorFactory = new ValidatorFactory($this);
+
+        if (!empty($validators)) {
+            $this->registerValidators($validators);
+        }
+    }
+
+    public function findComponent(string $key): ?array {
+        $foundComponent = null;
+
+        $this->eachComponent(function ($component, $currentPath) use ($key, &$foundComponent) {
+            if ($currentPath === $key) {
+                $foundComponent = $component;
+            }
+        });
+
+        return $foundComponent;
     }
 
     private function eachComponent(callable $callback): void {
@@ -46,6 +66,14 @@ class FormioBuilderValidator
         }
     }
 
+    public function validateSchema(): array {
+        if (empty($this->components)) {
+            return ['Invalid schema: components must be an array'];
+        }
+
+        return $this->validate();
+    }
+
     private function validate(): array {
         $errors = [];
 
@@ -54,7 +82,7 @@ class FormioBuilderValidator
 
             if ($validator !== null) {
                 $componentErrors = $validator->validate($component);
-                if ( !empty($componentErrors) ) {
+                if (!empty($componentErrors)) {
                     $errors[$path] = $componentErrors;
                 }
             }
@@ -63,24 +91,22 @@ class FormioBuilderValidator
         return $errors;
     }
 
-    public function findComponent(string $key): ?array {
-        $foundComponent = null;
-
-        $this->eachComponent(function ($component, $currentPath) use ($key, &$foundComponent) {
-            if ($currentPath === $key) {
-                $foundComponent = $component;
-            }
-        });
-
-        return $foundComponent;
+    /**
+     * @param array<string, class-string<IFormValidator>> $validators
+     *
+     * @return void
+     */
+    public function registerValidators(array $validators): void {
+        $this->validatorFactory->registerValidators($validators);
     }
 
-    public function validateSchema(): array
-    {
-        if (!is_array($this->components)) {
-            return ['Invalid schema: components must be an array'];
-        }
-
-        return $this->validate();
+    /**
+     * @param string $type
+     * @param class-string<IFormValidator> $validatorClass
+     *
+     * @return void
+     */
+    public function registerValidator(string $type, string $validatorClass): void {
+        $this->validatorFactory->registerValidator($type, $validatorClass);
     }
 }

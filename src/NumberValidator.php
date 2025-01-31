@@ -2,7 +2,7 @@
 
 namespace A9korn\FormioValidator;
 
-class NumberValidator extends BaseValidator implements ValidatorInterface
+class NumberValidator extends BaseValidator implements IFormValidator
 {
     protected array $requiredFields = ['key', 'type', 'input', 'delimiter'];
 

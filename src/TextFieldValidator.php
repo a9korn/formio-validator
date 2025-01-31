@@ -2,9 +2,7 @@
 
 namespace A9korn\FormioValidator;
 
-use App\BaseValidator;
-
-class TextFieldValidator extends BaseValidator
+class TextFieldValidator extends BaseValidator implements IFormValidator
 {
     protected array $requiredFields = ['key', 'type', 'input'];
 

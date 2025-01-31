@@ -4,13 +4,13 @@ namespace A9korn\FormioValidator;
 
 class ValidatorFactory
 {
+    /**
+     * @var array<string, class-string<IFormValidator>>
+     */
     private array $validators = [
         'baseValidator' => BaseValidator::class,
         'number'        => NumberValidator::class,
         'textfield'     => TextFieldValidator::class,
-        //        'datagrid' => DataGridValidator::class,
-        //        'table' => TableValidator::class,
-        //        'columns' => ColumnsValidator::class,
     ];
 
     private array $validatorInstances = [];
@@ -20,7 +20,11 @@ class ValidatorFactory
         $this->formValidator = $formValidator;
     }
 
-    public function createValidator(array $component): ?ValidatorInterface {
+    /**
+     * @param array $component
+     * @return IFormValidator|null
+     */
+    public function createValidator(array $component): ?IFormValidator {
         if (!isset($component['type'])) {
             return null;
         }
@@ -44,11 +48,28 @@ class ValidatorFactory
         return null;
     }
 
+    /**
+     * @param string $type
+     * @param class-string<IFormValidator> $validatorClass
+     *
+     * @return void
+     */
     public function registerValidator(string $type, string $validatorClass): void {
-        if (!is_subclass_of($validatorClass, ValidatorInterface::class)) {
+        if (!is_subclass_of($validatorClass, IFormValidator::class)) {
             throw new \InvalidArgumentException("Validator class must implement ValidatorInterface");
         }
         $this->validators[$type] = $validatorClass;
         unset($this->validatorInstances[$type]);
+    }
+
+    /**
+     * @param array<string, class-string<IFormValidator>> $validators
+     *
+     * @return void
+     */
+    public function registerValidators(array $validators): void {
+        foreach ($validators as $type => $validatorClass) {
+            $this->registerValidator($type, $validatorClass);
+        }
     }
 }
